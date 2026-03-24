@@ -35,7 +35,7 @@ The skills work **fully offline** by default. The MCP servers are optional add-o
 │   (optional, online)   │                                        │
 │                        │   ┌──────────────────────────────┐     │
 │   ┌─────────────┐      │   │  dfir-orchestrator           │     │
-│   │ Threat Intel │      │   │  (autonomous reasoning loop) │     │
+│   │ Threat Intel │      │  │  (autonomous reasoning loop) │     │
 │   │ VT/Shodan/  │◄─────┤   └──────┬───────────────────────┘     │
 │   │ AbuseIPDB   │      │          │                             │
 │   └─────────────┘      │   ┌──────┴───────────────────────┐     │
@@ -133,8 +133,8 @@ python3 yara-rule-generator/scripts/generate_yara.py \
 
 ### Skills (offline, local analysis)
 
-| Skill | Lines | What it does |
-|---|---|---|
+| Skill | What it does |
+|---|---|
 | **dfir-orchestrator** | 1,137 | Autonomous reasoning loop (OODA), case state management, human-in-the-loop, investigation playbooks |
 | **windows-artifact-triage** | 961 | Parses EZTools CSV (PECmd, AmcacheParser, AppCompatCacheParser, EvtxECmd, MFTECmd), Chainsaw JSON, Hayabusa CSV/JSONL. Detects execution evidence, persistence, lateral movement, timestomping, brute force |
 | **log-timeline-correlator** | 869 | Merges timelines from 8+ formats (Plaso l2tcsv, Hayabusa, Chainsaw, EvtxECmd, syslog, JSON logs). Attack sequence detection with ATT&CK mapping, gap analysis, entity pivoting |
