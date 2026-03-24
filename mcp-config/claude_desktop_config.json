@@ -1,0 +1,76 @@
+{
+    "_comment": [
+        "DFIR Agentic Suite — MCP Server Configuration",
+        "Copy this file to the appropriate location:",
+        "  Claude Desktop (macOS): ~/Library/Application Support/Claude/claude_desktop_config.json",
+        "  Claude Desktop (Windows): %APPDATA%\\Claude\\claude_desktop_config.json",
+        "  Claude Code: .claude/settings.json (mcpServers key)",
+        "",
+        "Then fill in your API keys in the env sections below.",
+        "Servers you don't need can be removed entirely."
+    ],
+
+    "mcpServers": {
+
+        "dfir-threatintel": {
+            "_description": "Unified threat intelligence — VirusTotal, Shodan, AbuseIPDB, GreyNoise, OTX",
+            "command": "python3",
+            "args": ["-m", "dfir_threatintel_mcp"],
+            "cwd": "${DFIR_SKILLS_DIR}/mcp-servers/dfir-threatintel",
+            "env": {
+                "VT_API_KEY": "YOUR_VIRUSTOTAL_API_KEY",
+                "SHODAN_API_KEY": "YOUR_SHODAN_API_KEY",
+                "ABUSEIPDB_API_KEY": "YOUR_ABUSEIPDB_API_KEY",
+                "GREYNOISE_API_KEY": "YOUR_GREYNOISE_API_KEY",
+                "OTX_API_KEY": "YOUR_OTX_API_KEY"
+            }
+        },
+
+        "dfir-siem": {
+            "_description": "SIEM integration — Splunk, Elastic, Wazuh (query + alert trigger)",
+            "command": "python3",
+            "args": ["-m", "dfir_siem_mcp"],
+            "cwd": "${DFIR_SKILLS_DIR}/mcp-servers/dfir-siem",
+            "env": {
+                "SIEM_BACKEND": "splunk",
+                "SPLUNK_HOST": "https://your-splunk:8089",
+                "SPLUNK_TOKEN": "YOUR_SPLUNK_TOKEN",
+                "ELASTIC_HOST": "https://your-elastic:9200",
+                "ELASTIC_API_KEY": "YOUR_ELASTIC_API_KEY",
+                "WAZUH_HOST": "https://your-wazuh:55000",
+                "WAZUH_USER": "wazuh-wui",
+                "WAZUH_PASSWORD": "YOUR_WAZUH_PASSWORD"
+            }
+        },
+
+        "dfir-case-mgmt": {
+            "_description": "Incident management — TheHive, IRIS DFIR (case/alert/task/observable CRUD)",
+            "command": "python3",
+            "args": ["-m", "dfir_case_mgmt_mcp"],
+            "cwd": "${DFIR_SKILLS_DIR}/mcp-servers/dfir-case-mgmt",
+            "env": {
+                "CASE_BACKEND": "thehive",
+                "THEHIVE_URL": "http://your-thehive:9000",
+                "THEHIVE_API_KEY": "YOUR_THEHIVE_API_KEY",
+                "IRIS_URL": "https://your-iris:443",
+                "IRIS_API_KEY": "YOUR_IRIS_API_KEY"
+            }
+        },
+
+        "dfir-edr-response": {
+            "_description": "EDR response actions — CrowdStrike Falcon, Microsoft Defender XDR (read + contain)",
+            "command": "python3",
+            "args": ["-m", "dfir_edr_response_mcp"],
+            "cwd": "${DFIR_SKILLS_DIR}/mcp-servers/dfir-edr-response",
+            "env": {
+                "EDR_BACKEND": "crowdstrike",
+                "CS_CLIENT_ID": "YOUR_CROWDSTRIKE_CLIENT_ID",
+                "CS_CLIENT_SECRET": "YOUR_CROWDSTRIKE_CLIENT_SECRET",
+                "CS_BASE_URL": "https://api.crowdstrike.com",
+                "DEFENDER_TENANT_ID": "YOUR_AZURE_TENANT_ID",
+                "DEFENDER_CLIENT_ID": "YOUR_AZURE_APP_CLIENT_ID",
+                "DEFENDER_CLIENT_SECRET": "YOUR_AZURE_APP_SECRET"
+            }
+        }
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "_comment": [
+        "DFIR Agentic Suite — Claude Code MCP Configuration",
+        "Place this at: <your-project>/.claude/settings.json",
+        "Or merge the mcpServers key into your existing settings.json"
+    ],
+
+    "mcpServers": {
+        "dfir-threatintel": {
+            "command": "python3",
+            "args": ["-m", "dfir_threatintel_mcp"],
+            "cwd": "./mcp-servers/dfir-threatintel",
+            "env": {
+                "VT_API_KEY": "",
+                "SHODAN_API_KEY": "",
+                "ABUSEIPDB_API_KEY": "",
+                "GREYNOISE_API_KEY": "",
+                "OTX_API_KEY": ""
+            }
+        },
+        "dfir-siem": {
+            "command": "python3",
+            "args": ["-m", "dfir_siem_mcp"],
+            "cwd": "./mcp-servers/dfir-siem",
+            "env": {
+                "SIEM_BACKEND": "splunk",
+                "SPLUNK_HOST": "",
+                "SPLUNK_TOKEN": ""
+            }
+        },
+        "dfir-case-mgmt": {
+            "command": "python3",
+            "args": ["-m", "dfir_case_mgmt_mcp"],
+            "cwd": "./mcp-servers/dfir-case-mgmt",
+            "env": {
+                "CASE_BACKEND": "thehive",
+                "THEHIVE_URL": "",
+                "THEHIVE_API_KEY": ""
+            }
+        },
+        "dfir-edr-response": {
+            "command": "python3",
+            "args": ["-m", "dfir_edr_response_mcp"],
+            "cwd": "./mcp-servers/dfir-edr-response",
+            "env": {
+                "EDR_BACKEND": "crowdstrike",
+                "CS_CLIENT_ID": "",
+                "CS_CLIENT_SECRET": ""
+            }
+        }
+    }
+}

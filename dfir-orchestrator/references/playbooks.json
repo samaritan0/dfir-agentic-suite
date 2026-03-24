@@ -1,0 +1,181 @@
+{
+    "playbooks": {
+        "ransomware": {
+            "name": "Ransomware Investigation",
+            "description": "Full investigation of a ransomware incident from initial triage to detection rule generation",
+            "phases": [
+                {
+                    "phase": 1,
+                    "name": "initial_triage",
+                    "skill": "windows-artifact-triage",
+                    "description": "Parse all available Windows artifacts for evidence of execution, persistence, and lateral movement",
+                    "required_evidence": ["kape_output", "evtx", "prefetch", "amcache"],
+                    "focus": "all",
+                    "outputs": ["execution_evidence.json", "persistence_mechanisms.json", "timeline.csv", "extracted_hashes.txt"],
+                    "next_phase_trigger": "always"
+                },
+                {
+                    "phase": 2,
+                    "name": "ioc_enrichment",
+                    "skill": "ioc-extractor",
+                    "description": "Enrich all extracted hashes and IOCs against threat intelligence",
+                    "inputs_from_previous": ["extracted_hashes.txt", "triage_summary.md"],
+                    "flags": ["--enrich", "--format", "json"],
+                    "outputs": ["enriched_iocs.json"],
+                    "next_phase_trigger": "always"
+                },
+                {
+                    "phase": 3,
+                    "name": "timeline_correlation",
+                    "skill": "log-timeline-correlator",
+                    "description": "Merge all timeline sources and detect attack sequence",
+                    "inputs_from_previous": ["timeline.csv"],
+                    "additional_inputs": ["plaso_supertimeline", "cloud_logs", "syslog"],
+                    "flags": ["--attack-sequence"],
+                    "outputs": ["merged_timeline.csv", "attack_sequence.json", "gap_analysis.json"],
+                    "next_phase_trigger": "always",
+                    "checkpoint": true,
+                    "checkpoint_reason": "Present attack sequence findings before generating detection rules"
+                },
+                {
+                    "phase": 4,
+                    "name": "mft_deep_dive",
+                    "skill": "windows-artifact-triage",
+                    "description": "Deep analysis of MFT for encrypted file patterns and timestomping",
+                    "required_evidence": ["mft"],
+                    "focus": "filesystem",
+                    "conditional": "if mft_available",
+                    "outputs": ["timestomping.json"],
+                    "next_phase_trigger": "if_findings"
+                },
+                {
+                    "phase": 5,
+                    "name": "detection_generation",
+                    "skill": "yara-rule-generator",
+                    "description": "Generate YARA rules from behavioral findings and confirmed IOCs",
+                    "modes": [
+                        {"mode": "behavioral", "input": "attack_description_from_findings"},
+                        {"mode": "ioc", "input": "enriched_iocs.json"}
+                    ],
+                    "outputs": ["behavioral_rule.yar", "ioc_rule.yar"],
+                    "next_phase_trigger": "always"
+                },
+                {
+                    "phase": 6,
+                    "name": "final_report",
+                    "skill": "orchestrator",
+                    "description": "Generate comprehensive investigation report",
+                    "outputs": ["investigation_report.md", "ioc_export.csv", "mitre_techniques.json"],
+                    "checkpoint": true,
+                    "checkpoint_reason": "Review final report before closing case"
+                }
+            ]
+        },
+
+        "bec": {
+            "name": "Business Email Compromise",
+            "description": "Investigation of email account compromise with focus on cloud identity and mail access",
+            "phases": [
+                {
+                    "phase": 1,
+                    "name": "email_ioc_extraction",
+                    "skill": "ioc-extractor",
+                    "description": "Extract IOCs from suspicious email headers, body, and attachments",
+                    "required_evidence": ["email_samples", "email_headers"],
+                    "flags": ["--enrich", "--format", "json"],
+                    "outputs": ["email_iocs.json"]
+                },
+                {
+                    "phase": 2,
+                    "name": "identity_log_analysis",
+                    "skill": "log-timeline-correlator",
+                    "description": "Analyze cloud identity logs for unauthorized access patterns",
+                    "required_evidence": ["okta_logs", "entra_signin_logs", "entra_audit_logs"],
+                    "flags": ["--attack-sequence"],
+                    "outputs": ["identity_timeline.csv", "attack_sequence.json"],
+                    "checkpoint": true,
+                    "checkpoint_reason": "Confirm compromised accounts before proceeding"
+                },
+                {
+                    "phase": 3,
+                    "name": "mail_audit",
+                    "skill": "log-timeline-correlator",
+                    "description": "Analyze mail audit logs for data access and forwarding rules",
+                    "required_evidence": ["unified_audit_log", "mailbox_audit_log"],
+                    "pivot_entity": "compromised_user_from_phase_2",
+                    "outputs": ["mail_access_timeline.csv"]
+                },
+                {
+                    "phase": 4,
+                    "name": "final_report",
+                    "skill": "orchestrator",
+                    "outputs": ["bec_report.md", "compromised_accounts.json", "accessed_data_summary.json"]
+                }
+            ]
+        },
+
+        "lateral_movement": {
+            "name": "Lateral Movement Investigation",
+            "description": "Trace attacker movement across systems from an initial compromised host",
+            "phases": [
+                {
+                    "phase": 1,
+                    "name": "initial_host_triage",
+                    "skill": "windows-artifact-triage",
+                    "focus": "lateral",
+                    "outputs": ["lateral_movement.json", "execution_evidence.json", "timeline.csv"]
+                },
+                {
+                    "phase": 2,
+                    "name": "entity_pivot",
+                    "skill": "log-timeline-correlator",
+                    "description": "Pivot on each source IP and compromised account across all log sources",
+                    "flags": ["--attack-sequence"],
+                    "pivot_entity": "source_ips_from_lateral_movement",
+                    "outputs": ["entity_timeline.csv", "attack_sequence.json"],
+                    "checkpoint": true
+                },
+                {
+                    "phase": 3,
+                    "name": "ioc_enrichment",
+                    "skill": "ioc-extractor",
+                    "flags": ["--enrich"],
+                    "outputs": ["enriched_iocs.json"]
+                },
+                {
+                    "phase": 4,
+                    "name": "tool_detection",
+                    "skill": "yara-rule-generator",
+                    "description": "Generate YARA rules for offensive tools observed in the investigation",
+                    "modes": [{"mode": "behavioral", "input": "tools_observed_description"}],
+                    "outputs": ["tool_detection.yar"]
+                },
+                {
+                    "phase": 5,
+                    "name": "final_report",
+                    "skill": "orchestrator",
+                    "outputs": ["lateral_movement_report.md", "movement_path.json"]
+                }
+            ]
+        },
+
+        "generic": {
+            "name": "Generic Investigation",
+            "description": "Adaptive investigation that auto-detects evidence types and builds the investigation plan dynamically",
+            "phases": [
+                {
+                    "phase": 1,
+                    "name": "evidence_discovery",
+                    "skill": "orchestrator",
+                    "description": "Scan evidence directory, classify available artifacts, propose investigation plan"
+                },
+                {
+                    "phase": 2,
+                    "name": "adaptive",
+                    "skill": "auto",
+                    "description": "Orchestrator dynamically selects skills based on evidence and findings"
+                }
+            ]
+        }
+    }
+}
