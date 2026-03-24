@@ -135,11 +135,11 @@ python3 yara-rule-generator/scripts/generate_yara.py \
 
 | Skill | What it does |
 |---|---|
-| **dfir-orchestrator** | 1,137 | Autonomous reasoning loop (OODA), case state management, human-in-the-loop, investigation playbooks |
-| **windows-artifact-triage** | 961 | Parses EZTools CSV (PECmd, AmcacheParser, AppCompatCacheParser, EvtxECmd, MFTECmd), Chainsaw JSON, Hayabusa CSV/JSONL. Detects execution evidence, persistence, lateral movement, timestomping, brute force |
-| **log-timeline-correlator** | 869 | Merges timelines from 8+ formats (Plaso l2tcsv, Hayabusa, Chainsaw, EvtxECmd, syslog, JSON logs). Attack sequence detection with ATT&CK mapping, gap analysis, entity pivoting |
-| **ioc-extractor** | 669 | Extracts 14 IOC types (IPs, domains, hashes, URLs, CVEs, ATT&CK IDs, registry paths, crypto addresses, named pipes). Auto-refanging, deduplication, enrichment via threat intel APIs. Output: JSON/CSV/Markdown/STIX 2.1 |
-| **yara-rule-generator** | 624 | Generates YARA rules from behavioral descriptions, extracted strings, or IOC lists. Includes rule quality analyzer and detection pattern reference library |
+| **dfir-orchestrator** | Autonomous reasoning loop (OODA), case state management, human-in-the-loop, investigation playbooks |
+| **windows-artifact-triage** | Parses EZTools CSV (PECmd, AmcacheParser, AppCompatCacheParser, EvtxECmd, MFTECmd), Chainsaw JSON, Hayabusa CSV/JSONL. Detects execution evidence, persistence, lateral movement, timestomping, brute force |
+| **log-timeline-correlator** | Merges timelines from 8+ formats (Plaso l2tcsv, Hayabusa, Chainsaw, EvtxECmd, syslog, JSON logs). Attack sequence detection with ATT&CK mapping, gap analysis, entity pivoting |
+| **ioc-extractor** | Extracts 14 IOC types (IPs, domains, hashes, URLs, CVEs, ATT&CK IDs, registry paths, crypto addresses, named pipes). Auto-refanging, deduplication, enrichment via threat intel APIs. Output: JSON/CSV/Markdown/STIX 2.1 |
+| **yara-rule-generator** | Generates YARA rules from behavioral descriptions, extracted strings, or IOC lists. Includes rule quality analyzer and detection pattern reference library |
 
 ### MCP Servers (optional, external integrations)
 
